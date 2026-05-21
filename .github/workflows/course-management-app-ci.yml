@@ -1,0 +1,49 @@
+name: course-management-app CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Unit1/Uebungen/course-management-app/**'
+      - '.github/workflows/course-management-app-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Unit1/Uebungen/course-management-app/**'
+      - '.github/workflows/course-management-app-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Type-check & Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Unit1/Uebungen/course-management-app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: Unit1/Uebungen/course-management-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: Unit1/Uebungen/course-management-app/dist
+          retention-days: 7
