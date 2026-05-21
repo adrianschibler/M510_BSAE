@@ -18,7 +18,7 @@ function Dashboard(): React.ReactElement {
 
   return (
     <div>
-      <h1 className="page-title">Dashboard</h1>
+      <h1 className="page-title">Dashboard Adrian</h1>
 
       <div className="dashboard-stats">
         <div className="stat-box">
