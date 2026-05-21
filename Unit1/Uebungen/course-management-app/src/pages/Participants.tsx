@@ -1,51 +1,130 @@
-import React from 'react'
-import { participantsData, coursesData } from '../data/mockData'
+import React, { useMemo, useState } from 'react'
+import {
+  participantsData,
+  coursesData,
+  Participant,
+  ParticipantStatus
+} from '../data/mockData'
+import StatusBadge from '../components/StatusBadge'
+import SearchBar from '../components/SearchBar'
+import Modal from '../components/Modal'
+
+type StatusFilter = 'all' | ParticipantStatus
 
 function Participants(): React.ReactElement {
-    // Hilfsfunktion um Kurstitel von ID zu erhalten
-    const getCourseTitle = (courseId: number): string => {
-        const course = coursesData.find(c => c.id === courseId)
-        return course ? course.title : 'Unbekannter Kurs'
-    }
+  const [query, setQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [selected, setSelected] = useState<Participant | null>(null)
 
-    return (
-        <div>
-            <h1 className="page-title">Teilnehmende</h1>
+  const getCourseTitle = (courseId: number): string => {
+    const course = coursesData.find(c => c.id === courseId)
+    return course ? course.title : 'Unbekannter Kurs'
+  }
 
-            <div className="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>E-Mail</th>
-                            <th>Zugewiesener Kurs</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {participantsData.map(participant => (
-                            <tr key={participant.id}>
-                                <td>{participant.name}</td>
-                                <td>{participant.email}</td>
-                                <td>{getCourseTitle(participant.courseId)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            {/*      <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#fff3cd', borderRadius: '8px', borderLeft: '4px solid #ffc107' }}>
-        <h3 style={{ color: '#2c3e50', marginBottom: '10px' }}>⚠️ Bekannte Lücken:</h3>
-        <ul style={{ color: '#555', lineHeight: '1.8', marginLeft: '20px' }}>
-          <li>Keine Suchfunktion für Teilnehmende</li>
-          <li>Keine Filterung nach Kursen</li>
-          <li>Keine Detailansicht für Teilnehmende</li>
-          <li>Teilnehmerstatus wird nicht angezeigt</li>
-          <li>Keine Möglichkeit, Teilnehmende hinzuzufügen/zu bearbeiten</li>
-        </ul>
-      </div> 
-      */}
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return participantsData.filter(p => {
+      const matchesQuery = q === '' || p.name.toLowerCase().includes(q)
+      const matchesStatus = statusFilter === 'all' || p.status === statusFilter
+      return matchesQuery && matchesStatus
+    })
+  }, [query, statusFilter])
 
+  const selectedCourse = selected ? coursesData.find(c => c.id === selected.courseId) : undefined
+
+  return (
+    <div>
+      <h1 className="page-title">Teilnehmende</h1>
+
+      <div className="toolbar">
+        <div className="toolbar-grow">
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+            placeholder="Nach Namen suchen..."
+          />
         </div>
-    )
+        <label className="toolbar-field">
+          <span>Status:</span>
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value as StatusFilter)}
+            className="select-input"
+          >
+            <option value="all">Alle</option>
+            <option value="angemeldet">Angemeldet</option>
+            <option value="bestaetigt">Bestätigt</option>
+            <option value="abgemeldet">Abgemeldet</option>
+          </select>
+        </label>
+        <span className="toolbar-info">
+          {filtered.length} von {participantsData.length}
+        </span>
+      </div>
+
+      <div className="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>E-Mail</th>
+              <th>Zugewiesener Kurs</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(p => (
+              <tr
+                key={p.id}
+                className="row-clickable"
+                onClick={() => setSelected(p)}
+              >
+                <td>{p.name}</td>
+                <td>{p.email}</td>
+                <td>{getCourseTitle(p.courseId)}</td>
+                <td><StatusBadge kind="participant" status={p.status} /></td>
+                <td>
+                  <button
+                    className="link-button"
+                    onClick={e => { e.stopPropagation(); setSelected(p) }}
+                  >
+                    Details
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={5} className="empty-state">Keine Teilnehmenden gefunden.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {selected && (
+        <Modal title={selected.name} onClose={() => setSelected(null)}>
+          <dl className="detail-grid">
+            <dt>Name</dt>
+            <dd>{selected.name}</dd>
+            <dt>E-Mail</dt>
+            <dd><a href={`mailto:${selected.email}`}>{selected.email}</a></dd>
+            <dt>Zugewiesener Kurs</dt>
+            <dd>{selectedCourse ? selectedCourse.title : 'Unbekannter Kurs'}</dd>
+            <dt>Kursdatum</dt>
+            <dd>
+              {selectedCourse
+                ? new Date(selectedCourse.date).toLocaleDateString('de-DE')
+                : '–'}
+            </dd>
+            <dt>Status</dt>
+            <dd><StatusBadge kind="participant" status={selected.status} /></dd>
+          </dl>
+        </Modal>
+      )}
+    </div>
+  )
 }
 
 export default Participants
