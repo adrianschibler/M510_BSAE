@@ -1,5 +1,5 @@
 import { produkte } from './data/mockData'
-
+import ProduktDataGrid from './components/ProduktDataGrid'
 export default function App() {
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '2rem' }}>
@@ -39,23 +39,7 @@ export default function App() {
          * Du kannst eine neue Komponente erstellen (z.B. src/components/Produkttabelle.tsx)
          * und sie hier einbinden.
          */}
-        <div
-          style={{
-            background: '#fff3cd',
-            border: '2px dashed #ffc107',
-            borderRadius: 8,
-            padding: '2rem',
-            textAlign: 'center',
-            color: '#856404',
-          }}
-        >
-          <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>
-            👉 Implementiere hier deine Tabelle mit Paginierung
-          </p>
-          <p style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
-            Lies zuerst die Aufgabenstellung im <code>README.md</code>
-          </p>
-        </div>
+        <ProduktDataGrid />
       </main>
     </div>
   )
