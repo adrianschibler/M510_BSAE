@@ -298,6 +298,14 @@
   font-size: 14px;
 }
 
+
+.articles-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+.articles-table th, .articles-table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+.articles-table th { background: #f3f4f6; font-weight: 600; }
+.articles-table tbody tr:hover { background: #f9fafb; }
+
+
+
 /* ── Einstellungsseite ────────────────────────────────── */
 
 .settings-section {

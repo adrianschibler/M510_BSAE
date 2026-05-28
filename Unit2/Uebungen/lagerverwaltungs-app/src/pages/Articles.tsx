@@ -1,6 +1,5 @@
 import React from 'react'
-// TODO: Import der Artikeldaten einkommentieren, sobald die Tabelle implementiert wird
-// import { articles } from '../data/mockData'
+import { articles } from '../data/mockData'
 
 // Artikelseite - zeigt alle Artikel in einer Tabelle an
 function Articles(): React.ReactElement {
@@ -9,11 +8,32 @@ function Articles(): React.ReactElement {
       <h1 className="page-title">Artikel</h1>
       <p className="page-subtitle">Alle Lagerartikel im Ueberblick</p>
 
-      {/* TODO: Tabelle mit allen Artikeln ausgeben */}
-      {/* Tipp: articles aus mockData importieren und mit .map() ueber die Liste iterieren */}
-      {/* Felder: name, articleNumber, category, location, stock, minStock, status */}
-
-      <p style={{ color: '#94a3b8' }}>Artikelliste noch nicht implementiert.</p>
+      <table className="articles-table">
+        <thead>
+          <tr>
+            <th>Artikel</th>
+            <th>Nummer</th>
+            <th>Kategorie</th>
+            <th>Lagerort</th>
+            <th>Bestand</th>
+            <th>Mindestbestand</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {articles.map(a => (
+            <tr key={a.articleNumber}>
+              <td>{a.name}</td>
+              <td>{a.articleNumber}</td>
+              <td>{a.category}</td>
+              <td>{a.location}</td>
+              <td>{a.stock}</td>
+              <td>{a.minStock}</td>
+              <td>{a.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
